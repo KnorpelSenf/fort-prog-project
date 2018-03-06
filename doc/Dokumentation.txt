@@ -1,0 +1,2 @@
+Im Drive-Ordner für FortProg befindet sich ein Ordner für das
+Projekt. Darin liegen einige Lösungen und viel Dokumentation.

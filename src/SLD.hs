@@ -11,26 +11,27 @@ import Data.Maybe
 data SLDTree = Node Goal [(Subst, SLDTree)]
 
 sld :: Prog -> Goal -> SLDTree
-sld _                    g@(Goal [])
-  = Node g []
-sld prog@(Prog progRulz) goal@(Goal (gt:erms))
-  = Node goal $ map    (\(subst, ts)  -> (subst, sld prog
-                                                   $ Goal
-                                                   $ mapApply subst ts))
-              $ map    (\(Just s, rb) -> (s, rb ++ erms))
-              $ filter (not . isNothing . fst)
-              $ map    (\(rh :- rb)   -> (unify gt rh, rb))
-              $ map    (uniqueVars goal)
+sld p g@(Goal goalTerms) = sld' ([0..] \\ concatMap varsIn goalTerms) p g
+
+sld' :: [VarIndex] -> Prog -> Goal -> SLDTree
+sld' _          _                    g@(Goal []) = Node g []
+sld' unusedVars prog@(Prog progRulz) goal@(Goal (gt:erms))
+   = Node goal $ map    (\(subst, ts, uv)  -> (subst, sld' uv prog
+                                                        $ Goal
+                                                        $ mapApply subst ts))
+              $ map    (\(Just s, rb, uv) -> (s, rb ++ erms, uv))
+              $ filter (not . isNothing . fst3)
+              $ map    (\(rh :- rb, uv)   -> (unify gt rh, rb, uv))
+              $ map    (uniqueVars unusedVars)
               $ progRulz
 
-uniqueVars :: Goal -> Rule -> Rule
-uniqueVars (Goal goalTerms) rule@(rh :- rb) = flip mapRuleVars rule
-                                                $ zip (concatMap varsIn
-                                                         $ rh : rb)
-                                                $ ([0..] \\)
-                                                $ concatMap varsIn
-                                                $ goalTerms
-                                           
+fst3 :: (a,b,c) -> a
+fst3 (x,_,_) = x
+
+uniqueVars :: [VarIndex] -> Rule -> (Rule, [VarIndex])
+uniqueVars unusedVars rule@(rh :- rb) = let m = zip (concatMap varsIn (rh:rb)) unusedVars
+                                        in (mapRuleVars m rule, drop (length m) unusedVars)
+
 mapRuleVars :: [(VarIndex, VarIndex)] -> Rule -> Rule
 mapRuleVars m (rh :- rb) = (mapTermVars m rh) :- (map (mapTermVars m) rb)
 

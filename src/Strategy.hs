@@ -15,7 +15,7 @@ dfs = dfs' empty
     dfs' :: Subst -> Strategy
     dfs' s (Node (Goal []) _       ) = [s]
     dfs' _ (Node _         []      ) = []
-    dfs' s (Node _         children) = concatMap (\(st,t) -> dfs' (compose s st) t) children
+    dfs' s (Node _         children) = concatMap (\(st,t) -> dfs' (compose st s) t) children
 
 -- Breadth first search
 bfs :: Strategy
@@ -25,7 +25,7 @@ bfs = bfs' empty []
     bfs' s q (Node _ c) = let isSolution = \sld -> (case sld of
                                                          Node (Goal []) _ -> True
                                                          _                -> False)
-                              children   = map (\(st,t) -> (compose s st,t)) c
+                              children   = map (\(st,t) -> (compose st s,t)) c
                               f          = isSolution . snd
                               solutions  = fst . unzip . (filter f)         $ children
                               queue      = snd . unzip . (filter (not . f)) $ children

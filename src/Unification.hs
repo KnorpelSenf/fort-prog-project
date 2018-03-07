@@ -7,13 +7,18 @@ import Data.Maybe
 
 -- Computes the disagreement set
 ds :: Term -> Term -> Maybe (Term, Term)
-ds t0              t1             | t0 == t1  = Nothing
-ds t0@(Var _)      t1             | t0 /= t1  = Just (t0, t1)
-ds t0              t1@(Var _)     | t0 /= t1  = Just (t0, t1)
-ds t0@(Comb p0 a0) t1@(Comb p1 a1)            = if p0 == p1 && length a0 == length a1
-                                                   then listToMaybe (filter (uncurry (/=)) (zip a0 a1))
-                                                   else Just (t0, t1)
-ds _               _                          = error "ds calc error"
+ds t0@(Var vi)     t1              | isNotThisVar vi t1                 = Just (t0, t1)
+ds t0              t1@(Var vi)     | isNotThisVar vi t0                 = Just (t0, t1)
+ds t0@(Comb p0 a0) t1@(Comb p1 a1) | p0 == p1 && length a0 == length a1 = listToMaybe
+                                                                          $ catMaybes
+                                                                          $ map (uncurry ds)
+                                                                          $ zip a0 a1
+                                   | otherwise                          = Just (t0, t1)
+--  where
+isNotThisVar :: VarIndex -> Term -> Bool
+isNotThisVar vi (Comb _ _) = True
+isNotThisVar vi (Var v)    = vi == v
+
 
 -- Computes the most general unifier
 unify :: Term -> Term -> Maybe Subst

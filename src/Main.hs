@@ -1,4 +1,4 @@
-module UnLog where
+module Main where
 -- Module for Task 6
 
 import Parser

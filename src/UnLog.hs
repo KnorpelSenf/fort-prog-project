@@ -9,6 +9,7 @@ import SLD
 import Strategy
 
 import System.IO
+import System.Random
 import Data.List
 
 -- STATE
@@ -91,10 +92,10 @@ action :: String -> Action
 action str | str == ":help" || str == ":h"            = help
            | str == ":info" || str == ":i"            = info
            | str == ":quit" || str == ":q"            = quit
-           | (take 5 str) == ":set "                   = set (drop 5 str)
-           | (take 3 str) == ":s "                     = set (drop 3 str)
-           | (take 6 str) == ":load "                  = load (drop 6 str)
-           | (take 3 str) == ":l "                     = load (drop 3 str)
+           | (take 5 str) == ":set "                  = set (drop 5 str)
+           | (take 3 str) == ":s "                    = set (drop 3 str)
+           | (take 6 str) == ":load "                 = load (drop 6 str)
+           | (take 3 str) == ":l "                    = load (drop 3 str)
            | otherwise                                = goal str
 
 -- /ACTION
@@ -106,7 +107,11 @@ main = do wellcome
           unlogCycle startState
           
 wellcome :: IO ()
-wellcome = (readFile "welcome-msg.txt") >>= putStrLn
+wellcome = do rnd <- randomRIO (1::Int, 5::Int)
+              msg <- if rnd == 1
+                        then readFile "welcome-msg-shitlog.txt"
+                        else readFile "welcome-msg-unlog.txt"
+              putStrLn msg
 
 unlogCycle :: State -> IO ()
 unlogCycle state = do hSetBuffering stdout NoBuffering

@@ -37,18 +37,18 @@ instance Pretty Term where
   --prettyWithVarsFun :: (VarIndex -> String) -> a -> String
   prettyWithVarsFun f  (Var vi)                    = f vi
   prettyWithVarsFun f  (Comb p args) | args == []  = p
-                                       | p == "."  = '[' : joinList args ++ "]"
+                                       | p == "."  = '[' : buildInnerList args ++ "]"
                                        | otherwise = p ++ '(' : (intercalate "," (map (prettyWithVarsFun f) args)) ++ ")"
     where 
       -- Builds the prolog list presentation
-      joinList :: [Term] -> String
-      joinList (e:ls:[]) =
+      buildInnerList :: [Term] -> String
+      buildInnerList (e:ls:[]) =
         (prettyWithVarsFun f) e ++ (case ls of
                                          Var _        -> '|' : (prettyWithVarsFun f) ls
-                                         Comb "." lss -> ", " ++ joinList lss
+                                         Comb "." lss -> ", " ++ buildInnerList lss
                                          Comb "[]" _  -> ""
                                          _            -> error "invalid list format")
-      joinList _         = 
+      buildInnerList _         = 
         error "invalid list format 2"
 
 
@@ -80,7 +80,9 @@ instance Pretty Rule where
   prettyWithVarsFun fun (t:-ts) = (prettyWithVarsFun fun) t ++ " :- " ++ (intercalate ", " $ map (prettyWithVarsFun fun) ts)
 instance Pretty Goal where
   prettyWithVarsFun fun (Goal ts) = (intercalate ", " $ map (prettyWithVarsFun fun) ts)
-
+{-
+  --TESTING
 printprogtest = putStrLn.pretty $ progtest
 printgoaltest = putStrLn.pretty $ goaltest
 printttree = putStrLn.pretty $ ttree
+-}

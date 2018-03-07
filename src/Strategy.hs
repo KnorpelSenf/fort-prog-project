@@ -13,9 +13,13 @@ dfs :: Strategy
 dfs = dfs' empty
   where
     dfs' :: Subst -> Strategy
-    dfs' s (Node (Goal []) _       ) = [s]
-    dfs' _ (Node _         []      ) = []
-    dfs' s (Node _         children) = concatMap (\(st,t) -> dfs' (compose st s) t) children
+    dfs' s (Node (Goal []) _    ) = [s]
+    dfs' _ (Node _         []   ) = []
+    --dfs' s (Node _         edges) = concatMap (\(st,t) -> dfs' (compose st s) t) edges
+    dfs' s (Node _         edges) = concat
+                                    $ map (uncurry dfs')
+                                    $ map (\(st,t) -> ((compose st s), t)) 
+                                    $ edges
 
 -- Breadth first search
 bfs :: Strategy

@@ -46,30 +46,7 @@ varsIn t = varsIn' t []
         varsIn' (Var vi)    vis = vi:vis
         varsIn' (Comb _ ts) vis = (concatMap varsIn ts) ++ vis
 
-
 {-
-    -- alle vars aus rule holen
-    -- [0..] \\ vars aus rule sind die benutzten vars
-    -- zip vars aus goal mit den benutzen liefert ein mapping
-    -- alles in der regel mappen
-    
-    
-    replaceInRule :: Rule -> [VarIndex] -> Rule
-    replaceInRule (rh :- rb) vs = let rep = replaceInTerm rh vs
-                                  in (fst rep) :- (replaceInTerms rb $ snd rep)
-    
-    replaceInTerms :: [Term] -> [VarIndex] -> ([Term], [VarIndex])
-    replaceInTerms []     vs = ([], vs)
-    replaceInTerms (t:ts) vs = let rep = replaceInTerm t vs
-                               in (fst rep):(replaceInTerms ts $ snd rep)
-    
-    replaceInTerm :: Term -> [VarIndex] -> (Term, [VarIndex])
-    replaceInTerm (Var _)     vs = (Var (head vs), tail vs)
-    replaceInTerm (Comb s ts) vs = let rep = replaceInTerms ts vs
-                                    in (Comb s (fst rep), snd rep)
--}
-
-      
 --TESTING
 s1 = single 1 (Var 2)
 s2 = single 0 (Comb "f" [Var 1, Comb "true" []])
@@ -99,3 +76,4 @@ gt0 = Goal [Comb "a" [Var 1, Var 0]]
 -- -? a(B,A).
 
 ttree = sld progtest goaltest
+-}

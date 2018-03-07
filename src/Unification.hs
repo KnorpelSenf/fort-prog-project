@@ -26,9 +26,9 @@ unify t0 t1 = unify' empty
   where
     unify' :: Subst -> Maybe Subst
     unify' s = makeSubst s
-                     $ uncurry ds
-                     $ mapTuple (apply s)
-                     $ (t0, t1)
+                $ uncurry ds
+                $ mapTuple (apply s)
+                $ (t0, t1)
 
     mapTuple :: (a -> b) -> (a, a) -> (b, b)
     mapTuple f (a1, a2) = (f a1, f a2)
@@ -46,6 +46,7 @@ unify t0 t1 = unify' empty
     varNotIn vi (Var vii)     = vi /= vii
     varNotIn vi (Comb p args) = all (varNotIn vi) args
 
+    {-
 --Testing:
 tfg0 = (Comb "f" [Comb "g" [Var 0]])
 tfg1 = (Comb "f" [Comb "g" [Comb "blubb" [] ]])
@@ -53,3 +54,4 @@ tf0 = (Comb "f" [Comb "x" [], Var 0, Comb "true" []])
 tf1 = (Comb "f" [Comb "x" [], Comb "ARGGHH!" [], Var 1])
 tg0 = Comb "g" [Comb "x" [], Comb "x" [], Comb "x" []]
 tv0 = Var 0
+-}

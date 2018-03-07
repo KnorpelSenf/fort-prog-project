@@ -1,10 +1,12 @@
-module Strategy where
+module Strategy
+  ( Strategy, dfs, bfs, solve )
+where
+
 --Module for Task 5
 
-import SLD
 import Type
-import Subst
-import Data.List
+import Subst ( Subst(..), empty, compose, apply )
+import SLD   ( SLDTree(..), sld, varsIn         )
 
 type Strategy = SLDTree -> [Subst]
 
@@ -15,10 +17,9 @@ dfs = dfs' empty
     dfs' :: Subst -> Strategy
     dfs' s (Node (Goal []) _    ) = [s]
     dfs' _ (Node _         []   ) = []
-    --dfs' s (Node _         edges) = concatMap (\(st,t) -> dfs' (compose st s) t) edges
     dfs' s (Node _         edges) = concat
-                                    $ map (uncurry dfs')
-                                    $ map (\(st,t) -> ((compose st s), t)) 
+                                    . map (uncurry dfs')
+                                    . map (\(st,t) -> ((compose st s), t)) 
                                     $ edges
 
 -- Breadth first search
@@ -34,15 +35,15 @@ bfs = bfs' empty []
                               solutions  = fst . unzip . (filter f)         $ children
                               queue      = snd . unzip . (filter (not . f)) $ children
                           in solutions ++ concatMap (\(s,t) -> bfs' s (q ++ queue) t) children
-      -- Kinder holen
-      -- filtern nach Lösung (also nach Goal [])
-      -- diese an den Akkumulator hängen
-      -- mit dem Komplement die Rekursion fortsetzen
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve s p g@(Goal ts) = map filterSubst (s (sld p g))
+solve s p g@(Goal ts) = map filterSubst
+                        . s
+                        . sld p
+                        $ g
   where
     filterSubst :: Subst -> Subst
     filterSubst subst = Subst
-                          $ map (\vi -> (vi, apply subst $ Var vi))
-                          $ concatMap varsIn ts
+                        . map (\vi -> (vi, apply subst $ Var vi))
+                        . concatMap varsIn
+                        $ ts

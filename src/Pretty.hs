@@ -1,12 +1,15 @@
-module Pretty where
--- Module for Task 1
+module Pretty
+  ( Pretty(..) )
+where
 
-import Data.List
-import Data.Char
+-- Module for Tasks 1, 7
+
 import Type
-import Subst
-import Unification
-import SLD
+import Subst     ( Subst(..)   )
+import SLD       ( SLDTree(..) )
+
+import Data.List ( intercalate )
+import Data.Char ( chr, ord    )
 
 -- Pretty Class for Prolog syntax output
 class Pretty a where
@@ -27,18 +30,17 @@ class Pretty a where
 intToAlphabet :: VarIndex -> String
 intToAlphabet n =
   let prev  = n `div` 26
-      digit = (chr (ord 'A' + (n `mod` 26))) : []
+      digit = [chr $ ord 'A' + (n `mod` 26)]
   in if prev == 0 then digit
                   else (intToAlphabet (prev - 1)) ++ digit
-
 
 -- Pretty Instance for Term (Task 1)
 instance Pretty Term where
   --prettyWithVarsFun :: (VarIndex -> String) -> a -> String
-  prettyWithVarsFun f  (Var vi)                    = f vi
-  prettyWithVarsFun f  (Comb p args) | args == []  = p
-                                       | p == "."  = '[' : buildInnerList args ++ "]"
-                                       | otherwise = p ++ '(' : (intercalate "," (map (prettyWithVarsFun f) args)) ++ ")"
+  prettyWithVarsFun f  (Var vi)                  = f vi
+  prettyWithVarsFun f  (Comb p args) | null args = p
+                                     | p == "."  = '[' : buildInnerList args ++ "]"
+                                     | otherwise = p ++ '(' : (intercalate "," (map (prettyWithVarsFun f) args)) ++ ")"
     where 
       -- Builds the prolog list presentation
       buildInnerList :: [Term] -> String

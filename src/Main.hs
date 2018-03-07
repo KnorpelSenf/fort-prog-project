@@ -1,19 +1,20 @@
-module Main where
+module Main
+  ( main )
+where
+
 -- Module for Task 6
 
-import Parser
 import Type
-import Pretty
-import Subst
-import SLD
+import Parser
+import Pretty ( pretty, prettyWithVars )
+import Subst  ( Subst                  )
 import Strategy
 
-import System.IO
-import System.Random
-import Data.List
+import System.IO     ( BufferMode (NoBuffering, LineBuffering), stdin, stdout, hSetBuffering )
+import System.Random ( randomRIO                                                             )
 
 -- STATE
--- Datatype to store the current status of the interpreter
+-- data type to store the current status of the interpreter
 data State = State Strategy Bool Prog
 
 startState :: State

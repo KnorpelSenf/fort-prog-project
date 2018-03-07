@@ -79,14 +79,19 @@ goal qu st@(State s q p) =
 putSubst :: [Subst] -> [(VarIndex, String)] -> IO ()
 putSubst []        vss = do putStrLn "No more solutions."
                             return ()
-putSubst (s:ubsts) vss = do putStr (prettyWithVars vss s)
-                            hSetBuffering stdin NoBuffering
-                            c <- getChar
-                            hSetBuffering stdin LineBuffering
-                            putStrLn ""
-                            if c == 'n' || c == ';' 
-                            then putSubst ubsts vss
-                            else return ()
+putSubst (s:ubsts) vss = let o = prettyWithVars vss s
+                             out = if o == "{}"
+                                      then "True. "
+                                      else o
+                         in do
+                              putStr (out)
+                              hSetBuffering stdin NoBuffering
+                              c <- getChar
+                              hSetBuffering stdin LineBuffering
+                              putStrLn ""
+                              if c == 'n' || c == ';' 
+                              then putSubst ubsts vss
+                              else return ()
 
 action :: String -> Action
 action str | str == ":help" || str == ":h"            = help

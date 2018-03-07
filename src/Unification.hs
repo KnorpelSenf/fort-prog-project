@@ -7,17 +7,19 @@ import Data.Maybe
 
 -- Computes the disagreement set
 ds :: Term -> Term -> Maybe (Term, Term)
+ds (Var v1)        (Var v2)        | v1 == v2                           = Nothing
 ds t0@(Var vi)     t1              | isNotThisVar vi t1                 = Just (t0, t1)
 ds t0              t1@(Var vi)     | isNotThisVar vi t0                 = Just (t0, t1)
 ds t0@(Comb p0 a0) t1@(Comb p1 a1) | p0 == p1 && length a0 == length a1 = listToMaybe
-                                                                            . catMaybes
-                                                                            . map (uncurry ds)
-                                                                            $ zip a0 a1
+                                                                           . catMaybes
+                                                                           . map (uncurry ds)
+                                                                           $ zip a0 a1
                                    | otherwise                          = Just (t0, t1)
+ds _               _                                                    = error "ds pattern fail"
 --  where
 isNotThisVar :: VarIndex -> Term -> Bool
 isNotThisVar vi (Comb _ _) = True
-isNotThisVar vi (Var v)    = vi == v
+isNotThisVar vi (Var v)    = vi /= v
 
 
 -- Computes the most general unifier

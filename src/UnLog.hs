@@ -113,10 +113,10 @@ main = do welcome
 
 welcome :: IO ()
 welcome = do rnd <- randomRIO (1::Int, 5::Int)
-              msg <- if rnd == 1
-                        then readFile "welcome-msg-shitlog.txt"
-                        else readFile "welcome-msg-unlog.txt"
-              putStrLn msg
+             msg <- if rnd == 1
+                       then readFile "welcome-msg-shitlog.txt"
+                       else readFile "welcome-msg-unlog.txt"
+             putStrLn msg
 
 unlogCycle :: State -> IO ()
 unlogCycle state = do hSetBuffering stdout NoBuffering

@@ -91,8 +91,10 @@ action :: String -> Action
 action str | str == ":help" || str == ":h"            = help
            | str == ":info" || str == ":i"            = info
            | str == ":quit" || str == ":q"            = quit
-           | (take 4 str) == ":set"                   = set (drop 5 str)
-           | (take 5 str) == ":load"                  = load (drop 6 str)
+           | (take 5 str) == ":set "                   = set (drop 5 str)
+           | (take 3 str) == ":s "                     = set (drop 3 str)
+           | (take 6 str) == ":load "                  = load (drop 6 str)
+           | (take 3 str) == ":l "                     = load (drop 3 str)
            | otherwise                                = goal str
 
 -- /ACTION

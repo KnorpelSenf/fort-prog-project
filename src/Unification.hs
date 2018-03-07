@@ -10,9 +10,9 @@ ds :: Term -> Term -> Maybe (Term, Term)
 ds t0@(Var vi)     t1              | isNotThisVar vi t1                 = Just (t0, t1)
 ds t0              t1@(Var vi)     | isNotThisVar vi t0                 = Just (t0, t1)
 ds t0@(Comb p0 a0) t1@(Comb p1 a1) | p0 == p1 && length a0 == length a1 = listToMaybe
-                                                                          $ catMaybes
-                                                                          $ map (uncurry ds)
-                                                                          $ zip a0 a1
+                                                                            . catMaybes
+                                                                            . map (uncurry ds)
+                                                                            $ zip a0 a1
                                    | otherwise                          = Just (t0, t1)
 --  where
 isNotThisVar :: VarIndex -> Term -> Bool
@@ -26,8 +26,8 @@ unify t0 t1 = unify' empty
   where
     unify' :: Subst -> Maybe Subst
     unify' s = makeSubst s
-                $ uncurry ds
-                $ mapTuple (apply s)
+                . uncurry ds
+                . mapTuple (apply s)
                 $ (t0, t1)
 
     mapTuple :: (a -> b) -> (a, a) -> (b, b)
@@ -41,7 +41,7 @@ unify t0 t1 = unify' empty
                                                  else Nothing
                              Just (t, Var vi) -> makeSubst sub (Just (Var vi, t))
                              _                -> Nothing
-
+                             
     varNotIn :: VarIndex -> Term -> Bool
     varNotIn vi (Var vii)     = vi /= vii
     varNotIn vi (Comb p args) = all (varNotIn vi) args

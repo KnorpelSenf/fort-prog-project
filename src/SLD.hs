@@ -1,4 +1,4 @@
-module SLD where
+module SLD(SLDTree (Node), sld, varsIn) where
 -- Module for Task 4
 
 import Type

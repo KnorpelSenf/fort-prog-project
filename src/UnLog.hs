@@ -108,11 +108,11 @@ action str | str == ":help" || str == ":h"            = help
 
 -- INTERACTION
 main :: IO ()
-main = do wellcome
+main = do welcome
           unlogCycle startState
-          
-wellcome :: IO ()
-wellcome = do rnd <- randomRIO (1::Int, 5::Int)
+
+welcome :: IO ()
+welcome = do rnd <- randomRIO (1::Int, 5::Int)
               msg <- if rnd == 1
                         then readFile "welcome-msg-shitlog.txt"
                         else readFile "welcome-msg-unlog.txt"

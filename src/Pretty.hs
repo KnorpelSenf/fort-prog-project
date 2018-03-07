@@ -19,7 +19,7 @@ class Pretty a where
       fun :: [(VarIndex, String)] -> VarIndex -> String
       fun []           vi             = intToAlphabet vi
       fun ((v,s):next) vi | v == vi   = s
-                        | otherwise = fun next vi
+                          | otherwise = fun next vi
   pretty :: a -> String
   pretty a = prettyWithVarsFun intToAlphabet a
     
@@ -35,42 +35,43 @@ intToAlphabet n =
 -- Pretty Instance for Term (Task 1)
 instance Pretty Term where
   --prettyWithVarsFun :: (VarIndex -> String) -> a -> String
-  prettyWithVarsFun fun  (Var vi)                    = intToAlphabet vi
-  prettyWithVarsFun fun  (Comb p args) | args == []  = p
+  prettyWithVarsFun f  (Var vi)                    = f vi
+  prettyWithVarsFun f  (Comb p args) | args == []  = p
                                        | p == "."  = '[' : joinList args ++ "]"
-                                       | otherwise = p ++ '(' : (intercalate "," (map (prettyWithVarsFun fun) args)) ++ ")"
+                                       | otherwise = p ++ '(' : (intercalate "," (map (prettyWithVarsFun f) args)) ++ ")"
     where 
       -- Builds the prolog list presentation
       joinList :: [Term] -> String
       joinList (e:ls:[]) =
-        (prettyWithVarsFun fun) e ++ (case ls of
-                                           Var _        -> '|' : (prettyWithVarsFun fun) ls
-                                           Comb "." lss -> ", " ++ joinList lss
-                                           Comb "[]" _  -> ""
-                                           _            -> error "invalid list format")
-      joinList _         = error "invalid list format 2"
+        (prettyWithVarsFun f) e ++ (case ls of
+                                         Var _        -> '|' : (prettyWithVarsFun f) ls
+                                         Comb "." lss -> ", " ++ joinList lss
+                                         Comb "[]" _  -> ""
+                                         _            -> error "invalid list format")
+      joinList _         = 
+        error "invalid list format 2"
 
 
 instance Pretty Subst where
-  prettyWithVarsFun fun (Subst s) =
+  prettyWithVarsFun f (Subst s) =
     '{' : (intercalate ", " (map (uncurry singlePretty) s)) ++ "}"
     where
       singlePretty :: VarIndex -> Term -> String
       singlePretty v t =
-        (prettyWithVarsFun fun) (Var v) ++ " -> " ++ (prettyWithVarsFun fun) t
+        (prettyWithVarsFun f) (Var v) ++ " -> " ++ (prettyWithVarsFun f) t
         
         
         
 --TESTING STUFF:
 instance Pretty SLDTree where
-  prettyWithVarsFun fun t = pretty' t ""
+  prettyWithVarsFun f t = pretty' t ""
     where
       pretty' :: SLDTree -> String -> String
       pretty' (Node (Goal ts) edges) pre = 
-        unlines ((pre++(intercalate ", " (map (prettyWithVarsFun fun) ts))++"."):(concatMap (prettyE ('\t':pre)) edges))
+        unlines ((pre++(intercalate ", " (map (prettyWithVarsFun f) ts))++"."):(concatMap (prettyE ('\t':pre)) edges))
         
       prettyE :: String -> (Subst, SLDTree) -> [String]
-      prettyE pre2 (subst, tree) = [pre2++((prettyWithVarsFun fun) subst), (pretty' tree pre2)]
+      prettyE pre2 (subst, tree) = [pre2++((prettyWithVarsFun f) subst), (pretty' tree pre2)]
 
 
 instance Pretty Prog where

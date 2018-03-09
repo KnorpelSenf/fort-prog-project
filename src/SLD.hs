@@ -47,9 +47,9 @@ mapRuleVars m (rh :- rb) = (mapTermVars m rh) :- (map (mapTermVars m) rb)
 
 -- apply mapping table to vars in term
 mapTermVars :: [(VarIndex, VarIndex)] -> Term -> Term
-mapTermVars []         t             = t
-mapTermVars ((d,z):rm) t@(Var v)     = if d == v then Var z else mapTermVars rm t
-mapTermVars m          t@(Comb s ts) = Comb s (map (mapTermVars m) ts)
+mapTermVars []         t           = t
+mapTermVars ((d,z):rm) t@(Var v)   = if d == v then Var z else mapTermVars rm t
+mapTermVars m          (Comb s ts) = Comb s (map (mapTermVars m) ts)
 
 -- get all vars in term
 varsIn :: Term -> [VarIndex]

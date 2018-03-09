@@ -27,14 +27,14 @@ bfs :: Strategy
 bfs = bfs' empty []
   where
     bfs' :: Subst -> [SLDTree] -> Strategy
-    bfs' s q (Node _ c) = let isSolution = \sld -> (case sld of
+    bfs' s q (Node _ c) = let isSolution = \sldTree -> (case sldTree of
                                                          Node (Goal []) _ -> True
                                                          _                -> False)
                               children   = map (\(st,t) -> (compose st s,t)) c
                               f          = isSolution . snd
                               solutions  = fst . unzip . (filter f)         $ children
                               queue      = snd . unzip . (filter (not . f)) $ children
-                          in solutions ++ concatMap (\(s,t) -> bfs' s (q ++ queue) t) children
+                          in solutions ++ concatMap (\(sub,t) -> bfs' sub (q ++ queue) t) children
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
 solve s p g@(Goal ts) = map filterSubst

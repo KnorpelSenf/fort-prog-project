@@ -39,7 +39,7 @@ help s = do putStrLn . unlines $ [
             return s
             
 info ::           Action
-info s = let State st q (Prog rules) = s
+info s = let State _ _ (Prog rules) = s
              rs = map (\(rh:-rb) -> (pretty rh, length rb)) rules
          in do putStrLn . unlines $ 
                 ("Available predicates: ":(map (\(p, l) -> p++"/"++(show l)) rs))
@@ -68,7 +68,7 @@ set strat (State s q p) = if strat == "dfs"
                                       return (State s q p)
 
 goal :: String -> Action
-goal qu st@(State s q p) = 
+goal qu st@(State s _ p) = 
   let par = parseWithVars qu
   in case par of
           Left str                -> do putStrLn str
@@ -78,7 +78,7 @@ goal qu st@(State s q p) =
                                            return st
 
 putSubst :: [Subst] -> [(VarIndex, String)] -> IO ()
-putSubst []        vss = do putStrLn "No more solutions."
+putSubst []        _   = do putStrLn "No more solutions."
                             return ()
 putSubst (s:ubsts) vss = let o = prettyWithVars vss s
                              out = if o == "{}"

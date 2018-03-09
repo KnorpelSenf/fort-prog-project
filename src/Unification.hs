@@ -22,7 +22,7 @@ ds t0@(Comb p0 a0) t1@(Comb p1 a1) | p0 == p1 && length a0 == length a1 = listTo
 ds _               _                                                    = error "ds pattern fail"
 --  where
 isNotThisVar :: VarIndex -> Term -> Bool
-isNotThisVar vi (Comb _ _) = True
+isNotThisVar _  (Comb _ _) = True
 isNotThisVar vi (Var v)    = vi /= v
 
 
@@ -50,7 +50,7 @@ unify t0 t1 = unify' empty
                              
     varNotIn :: VarIndex -> Term -> Bool
     varNotIn vi (Var vii)     = vi /= vii
-    varNotIn vi (Comb p args) = all (varNotIn vi) args
+    varNotIn vi (Comb _ args) = all (varNotIn vi) args
 
 {-
 --Testing:
